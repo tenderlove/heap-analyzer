@@ -23,6 +23,9 @@ that *point to* the object you clicked.
 
 ![references](https://github.com/tenderlove/heap-analyzer/raw/master/images/reference.png "Parent References")
 
+Hovering over a row will show you the allocation location (if it's available):
+![allocation location](https://github.com/tenderlove/heap-analyzer/raw/master/images/allocation_location.png "Allocation Location")
+
 You can use any heap dumps from `ObjectSpace.dump_all`, but the index file
 gives an example of dumping the heap for a Rails app.
 
