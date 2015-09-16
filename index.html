@@ -52,7 +52,7 @@
 <body>
 
 <div class="container">
-  <h1>MRI Heap Analyzer</h1>
+  <h1>MRI Heap Analyzer (<a href="https://github.com/tenderlove/heap-analyzer">Fork Me</a>)</h1>
 
   <div class="row">
     <div class="col-sm-12 form-inline">
@@ -193,8 +193,6 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
                     }
                 }
-            },
-            events: {
             }
         },
         series: [{
@@ -245,7 +243,14 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
         },
         series: [{
             name: 'Allocations',
-            data: categories.map(function(cat) { return genInfo[cat].length; })
+            data: categories.map(function(cat) {
+                return genInfo[cat].length;
+            }),
+            point: {
+              events: {
+                click: function(event) { showTable(this.objs); }
+              }
+            }
         }]
     });
   }
