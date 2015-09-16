@@ -6,12 +6,22 @@ You can see the current version [here](http://tenderlove.github.io/heap-analyzer
 
 ## The Good Things
 
-It processes MRI heap dumps in your browser.  Currently it will show you a break
-down of number of objects per type and number of allocations per generation.
+It processes MRI heap dumps in your browser.
+
+After you upload your heap dump, it will it will show you a break down of
+number of objects per type and number of allocations per generation:
+
+![uploaded](https://github.com/tenderlove/heap-analyzer/raw/master/images/uploaded.png "After Upload")
 
 If you click a slice of the pie, it will show you all allocations for that type
-in the table below.  If you click a row in the table, it will add a new table
-that lists the objects that *point to* the object you clicked.
+in the table below like this:
+
+![objects](https://github.com/tenderlove/heap-analyzer/raw/master/images/click_slice.png "Click a slice")
+
+If you click a row in the table, it will add a new table that lists the objects
+that *point to* the object you clicked.
+
+![references](https://github.com/tenderlove/heap-analyzer/raw/master/images/reference.png "Parent References")
 
 You can use any heap dumps from `ObjectSpace.dump_all`, but the index file
 gives an example of dumping the heap for a Rails app.
