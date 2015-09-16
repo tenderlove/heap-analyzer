@@ -16,7 +16,7 @@ that lists the objects that *point to* the object you clicked.
 You can use any heap dumps from `ObjectSpace.dump_all`, but the index file
 gives an example of dumping the heap for a Rails app.
 
-## The Bad Things
+## The Not Very Good Things
 
 It has bugs, so please send pull requests.  It is slow, so please send pull
 requests.  It doesn't look very good, so please send pull requests.
