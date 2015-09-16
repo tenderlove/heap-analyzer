@@ -2,6 +2,8 @@
 
 This is a Not Very Good heap analyzer for MRI.  It is not very good.
 
+You can see the current version [here](http://tenderlove.github.io/heap-analyzer/).
+
 ## The Good Things
 
 It processes MRI heap dumps in your browser.  Currently it will show you a break
