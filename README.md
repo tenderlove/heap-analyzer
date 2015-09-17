@@ -40,7 +40,7 @@ Also, please send pull requests.
 ## TODO
 
 The points in the "objects allocated per generation" graph are not clickable.  I
-would like to make them clickable in order to help find object leaks per gerenation.
+would like to make them clickable in order to help find object leaks per generation.
 
 Building the giant table is pretty slow, I would like to speed that up.
 
