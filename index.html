@@ -11,43 +11,15 @@
   }
   .top-buffer { margin-top:20px; }
   </style>
+  <link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.4.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <script id="object-list" type="text/x-handlebars-template">
-    <table class="table">
-    <thead>
-        <th>Type</th>
-        <th>Value</th>
-        <th>Memsize</th>
-        <th>Generation</th>
-        <th>Location</th>
-    </thead>
-    <tbody>
-        {{#objects}}
-        <tr title="address: {{address}} location: {{file}}:{{line}}" data-address="{{address}}">
-            <td>{{type}}</td> 
-            <td>{{trunc value}}</td> 
-            <td>{{memsize}}</td> 
-            <td>{{generation}}</td> 
-            <td>{{allocInfo file line }}</td> 
-        </tr>
-        {{/objects}}
-    </tbody>
-    </table>
-  </script>
-
-  <script id="parent-list" type="text/x-handlebars-template">
-    <tr data-parentsof="{{address}}">
-      <td>Parents of {{address}}</td>
-      <td colspan="4">{{{list}}}</td>
-    <tr>
-  </script>
-
+  <script type="text/javascript" src="http://w2ui.com/src/w2ui-1.4.min.js"></script>
 </head>
 <body>
 
@@ -82,64 +54,46 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
     </div>
   </div>
   <div class="row">
-    <div id="obj-list" class="col-sm-12">
+    <div id="obj-list" class="col-sm-12" style="height: 450px">
     </div>
   </div>
 </div>
 
 <script>
-  var source = $("#object-list").html();
-  var template = Handlebars.compile(source);
 
-  var plist = $("#parent-list").html();
-  var plistTemplate = Handlebars.compile(plist);
+  var objects = [];
+  var objIndex = {};
+  var columns = [
+    { field: 'address', caption: 'Address', size: '10%', hidden: true },
+    { field: 'type', caption: 'Type', size: '10%' },
+    { field: 'value', caption: 'Value', size: '30%' },
+    { field: 'memsize', caption: 'Memsize', size: '10%', sortable: true },
+    { field: 'generation', caption: 'Generation', size: '100px', sortable: true },
+    { field: 'loc', caption: 'Location', size: '30%' },
+    { field: 'file', caption: 'File', size: '30%', hidden: true },
+    { field: 'line', caption: 'Line', size: '50px', hidden: true },
+    { field: 'bs', caption: 'Bytesize', size: '100px', hidden: true },
+    { field: 'class', caption: 'Class', size: '100px', hidden: true },
+    { field: 'embedded', caption: 'Embedded', size: '50px', hidden: true },
+    { field: 'flags', caption: 'Flags', size: '100px', hidden: true },
+    { field: 'method', caption: 'Method', size: '200px', hidden: true }
+  ];
 
-  var objects;
-  var objIndex;
-
-  function addParents(element) {
-    var address = element.getAttribute("data-address");
-    var parents = objects.filter(function(obj) {
-        return obj.references && obj.references.indexOf(address) >= 0;
-    });
-
-    if (parents.length > 0) {
-      var data = { objects: parents.sort(function(a, b) { return b.memsize - a.memsize; }) };
-      var innerTable = template(data);
-      var newTr = plistTemplate({ list: innerTable, "address": address });
-      $(element).after(newTr);
-    }
-  }
-
-  function toggleParents(element) {
-    var address = element.getAttribute("data-address");
-    var parents = $('*[data-parentsof="' + address + '"]');
-    if (parents.length) {
-      parents.toggle();
-    } else {
-      addParents(element);
-    }
-  }
-
-  $('#obj-list').on('click', 'td', function(){
-      toggleParents(this.parentElement);
-  });
-
-  Handlebars.registerHelper('trunc', function(str) {
+  function truncStr(str) {
     if (str) {
       return str.substring(0, 30);
     } else {
       return str;
     }
-  });
+  };
 
-  Handlebars.registerHelper('allocInfo', function(file, line) {
+  function allocInfo(file, line) {
     if (file && line) {
       return file.substring(file.length - 30) + ":" + line;
     } else {
       return '';
     }
-  });
+  };
 
   function objectsByType(objs) {
     var data = {};
@@ -210,9 +164,59 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
   }
 
   function showTable(objs) {
-    var data = { objects: objs.sort(function(a, b) { return b.memsize - a.memsize; }) };
-    $('#obj-list').html(template(data));
-  }
+    var records = objs.map(function(obj) {
+      obj.value = truncStr(obj.value);
+      obj.loc = allocInfo(obj.file, obj.line);
+      obj.recid = obj.address;
+      return obj;
+    });
+    if (w2ui.hasOwnProperty('Objects')) {
+      w2ui['Objects'].destroy();
+    };
+    $('#obj-list').w2grid({
+        name   : 'Objects',
+        columns: columns,
+        show: { toolbar: true },
+        records: records,
+        onExpand: parentsGridToggle,
+        onCollapse: parentsGridToggle,
+        onRefresh: function(event){
+          columns = this.columns;
+        }
+    });
+    w2ui['Objects'].sort('memsize', 'desc');
+  };
+
+  function parentsGridToggle(event) {
+    if (w2ui.hasOwnProperty('subgrid-' + event.recid)) {
+      w2ui['subgrid-' + event.recid].destroy();
+    };
+    var address = objects[objIndex[event.recid]].address;
+    var parents = objects.filter(function(obj, ind) {
+      return obj.references && obj.references.indexOf(address) >= 0;
+    });
+
+    var records = parents.map(function(obj) {
+      obj.value = truncStr(obj.value);
+      obj.loc = allocInfo(obj.file, obj.line);
+      obj.recid = obj.address;
+      return obj;
+    });
+
+    $('#'+ event.box_id).css({ margin: '0px', padding: '0px', width: '100%' }).animate({ height: '205px' }, 100);
+    setTimeout(function () {
+        $('#'+ event.box_id).w2grid({
+            name: 'subgrid-' + event.recid,
+            show: { columnHeaders: false },
+            fixedBody: true,
+            columns: columns,
+            records: records,
+            onExpand: parentsGridToggle
+        });
+        w2ui['subgrid-' + event.recid].resize();
+        w2ui['subgrid-' + event.recid].sort('memsize', 'desc');
+    }, 300);
+  };
 
   function plotGeneration(container, genInfo) {
     var categories = Object.keys(genInfo).sort(function(a, b) { return a - b; });
@@ -253,7 +257,7 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
             }
         }]
     });
-  }
+  };
 
   function readHeap(file) {
     var reader = new FileReader();
@@ -262,17 +266,14 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
       if (evt.target.readyState == FileReader.DONE) {
         $("#instructions").hide();
         var lines = evt.target.result.split("\n");
-        objects = [];
-        objIndex    = {};
 
-        lines.forEach(function(line) {
+        lines.forEach(function(line, ind) {
             if (line.length > 0) {
               var obj = JSON.parse(line);
-              objIndex[obj.address] = obj;
+              objIndex[obj.address] = ind;
               objects.push(obj);
             }
         });
-
         var typeInfo = objectsByType(objects);
         plotTypes($('#type-info'), typeInfo);
 
@@ -284,7 +285,7 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
     };
 
     reader.readAsText(file);
-  }
+  };
 
 document.querySelector('.readButton').addEventListener('click', function(e) {
     readHeap(document.getElementById('file').files[0]);
