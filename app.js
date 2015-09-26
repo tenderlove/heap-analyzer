@@ -86,13 +86,36 @@ function objectsByGeneration(objs) {
   return data;
 }
 
-function showTable(objs) {
-  var data = {
-    objects: objs.sort(function(a, b) {
-      return b.memsize - a.memsize;
-    })
-  };
-  $('#obj-list').html(template(data));
+
+function bindObjectsTable(addressDimension) {
+  // Get objects count
+  var objectsCount = addressDimension.top(Infinity).length;
+
+  // Get all chart and listen for filters, so we keep update the table
+  dc.chartRegistry.list().forEach(function(chart) {
+    chart.on("filtered", function(chart, filter) {
+        // Skip empty filters
+        if(filter === null) return;
+
+        var filteredObjects = addressDimension.top(Infinity);
+
+        // HACK: Since rendering the table is slow for all objects, make sure
+        // we are not getting all objects
+        if(filteredObjects.length === objectsCount) {
+          return;
+        }
+
+        var data = {
+          objects: filteredObjects.sort(function(a, b) {
+            return b.memsize - a.memsize;
+          })
+        };
+
+        $('#obj-list').html(template(data));
+    });
+  });
+
+
 }
 
 
@@ -163,6 +186,13 @@ function renderCharts(objects) {
     .centerBar(true)
     .gap(1)
     .x(d3.scale.linear().domain(d3.extent(generationGroup.all(), function(o) { return o.key; })));
+
+
+  // objects table
+  // HACK: we are doing some hackish thing, after chart filter we would like to get the filter result
+  // in order to get all values we will create a dimension by address which it's not exactly dimension becuase it's unique per datum.
+  var addressDimension = objectsCrossfilter.dimension(function(d) { return d.address; });
+  bindObjectsTable(addressDimension);
 
 
 
