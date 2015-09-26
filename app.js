@@ -109,6 +109,10 @@ function getChartDimensions(chartSelector) {
 }
 
 function renderCharts(objects) {
+  // Show charts row, it's important to be here becuase dc.pieChart/dc.barChart/dc.*Chart
+  // needs the elements to be shown :(
+  $(".charts-row").show();
+
   var objectsCrossfilter = crossfilter(objects);
 
 
@@ -149,18 +153,20 @@ function renderCharts(objects) {
   var generationsChartDimensions = getChartDimensions("#generation-info");
 
   objectsGenerationChart
-     .width(generationsChartDimensions.width)
-     .height(generationsChartDimensions.height)
-     .dimension(generationDimension)
-     .group(generationGroup)
-     .elasticY(true)
-     .centerBar(true)
-     .gap(1)
-     .x(d3.scale.linear().domain(d3.extent(generationGroup.all(), function(o) { return o.key; })))
-     .renderHorizontalGridLines(true);
+    .width(generationsChartDimensions.width)
+    .height(generationsChartDimensions.height)
+    .transitionDuration(500)
+    .margins({top: 30, right: 50, bottom: 25, left: 40})
+    .dimension(generationDimension)
+    .group(generationGroup)
+    .elasticY(true)
+    .centerBar(true)
+    .gap(1)
+    .x(d3.scale.linear().domain(d3.extent(generationGroup.all(), function(o) { return o.key; })));
+
+
 
   dc.renderAll();
-
 }
 
 function updateFileProcessingProgressBar(percentageToCompletion) {

@@ -5,14 +5,10 @@
   <meta charset="utf-8" />
   <title>Heap Information</title>
   <style>
-
     .charts-row {
       height: 400px;
+      display: none;
     }
-    .chart {
-      float: left;
-    }
-
 
     .top-buffer {
       margin-top: 20px;
@@ -62,10 +58,15 @@
 
     <div class="row top-buffer charts-row">
       <div class="col-sm-4">
-        <div id="type-info" class="chart"></div>
+        <strong>Type Count</strong>
+        <br/>
+        <div id="type-info" class="dc-chart"></div>
       </div>
+
       <div class="col-sm-8">
-        <div id="generation-info" class="chart"></div>
+        <strong>Allocations per Generation</strong>
+        <br/>
+        <div id="generation-info" class="dc-chart"></div>
       </div>
     </div>
     <div class="row">
