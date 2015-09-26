@@ -96,31 +96,61 @@ function showTable(objs) {
 }
 
 
+function getChartDimensions(chartSelector) {
+  var $chart = $(chartSelector);
+
+  return {
+    // Get the width from the column (bootstrap col-*)
+    width: $chart.parent().width(),
+
+    // Get the height from charts-row elemnt
+    height: $chart.parents('.charts-row').height()
+  };
+}
+
 function renderCharts(objects) {
   var objectsCrossfilter = crossfilter(objects);
+
 
   // objects by type
   var objectsByTypeChart = dc.pieChart("#type-info");
   var typeDimension = objectsCrossfilter.dimension(function(obj) { return obj.type; });
 
+  var typeChartDimensions = getChartDimensions("#type-info");
+
+  // calculate the radius and the inner radius
+  var diameter = Math.min(typeChartDimensions.height, typeChartDimensions.width),
+      radius = diameter / 2,
+      innerRadius = 0.3 * radius;
+
   objectsByTypeChart
-       .width(600)
-       .height(400)
-       .radius(80)
-       .innerRadius(30)
+       .width(typeChartDimensions.width)
+       .height(typeChartDimensions.height)
+       .radius(radius)
+       .innerRadius(innerRadius)
        .dimension(typeDimension)
-       .group(typeDimension.group());
+       .group(typeDimension.group())
+       .title(function(d) {
+         return d.data.key + " - " + d.data.value;
+       })
+       .label(function(d) {
+         // Calculate the percentage of this type using the angles
+         var pct = Math.round((d.endAngle - d.startAngle) / Math.PI * 50);
+         return d.data.key + " - " + pct + '%';
+       })
+       .transitionDuration(500);
 
 
   // objects by generation
   var objectsGenerationChart = dc.barChart("#generation-info");
   var generationDimension = objectsCrossfilter.dimension(function(obj) { return obj.generation; });
-
   var generationGroup = generationDimension.group();
 
+  var generationsChartDimensions = getChartDimensions("#generation-info");
+
   objectsGenerationChart
-     .width(600)
-     .height(400)
+     .width(generationsChartDimensions.width)
+     .height(generationsChartDimensions.height)
      .dimension(generationDimension)
      .group(generationGroup)
      .elasticY(true)
