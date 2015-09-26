@@ -86,54 +86,6 @@ function objectsByGeneration(objs) {
   return data;
 }
 
-function plotTypes(container, typeInfo) {
-  // Build the chart
-  container.highcharts({
-    chart: {
-      plotBackgroundColor: null,
-      plotBorderWidth: null,
-      plotShadow: false,
-      type: 'pie'
-    },
-    title: {
-      text: 'Objects by Type'
-    },
-    tooltip: {
-      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-    },
-    plotOptions: {
-      pie: {
-        allowPointSelect: true,
-        cursor: 'pointer',
-        dataLabels: {
-          enabled: true,
-          format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-          style: {
-            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-          }
-        }
-      }
-    },
-    series: [{
-      name: "Type",
-      data: Object.keys(typeInfo).map(function(key) {
-        return {
-          name: key,
-          y: typeInfo[key].length,
-          objs: typeInfo[key]
-        };
-      }),
-      point: {
-        events: {
-          click: function(event) {
-            showTable(this.objs);
-          }
-        }
-      }
-    }]
-  });
-}
-
 function showTable(objs) {
   var data = {
     objects: objs.sort(function(a, b) {
@@ -143,49 +95,42 @@ function showTable(objs) {
   $('#obj-list').html(template(data));
 }
 
-function plotGeneration(container, genInfo) {
-  var categories = Object.keys(genInfo).sort(function(a, b) {
-    return a - b;
-  });
 
-  container.highcharts({
-    title: {
-      text: 'Allocations Per Generation',
-      x: -20 //center
-    },
-    xAxis: {
-      categories: categories
-    },
-    yAxis: {
-      title: {
-        text: 'Number of Allocations'
-      },
-      plotLines: [{
-        value: 0,
-        width: 1,
-        color: '#808080'
-      }]
-    },
-    legend: {
-      layout: 'vertical',
-      align: 'right',
-      verticalAlign: 'middle',
-      borderWidth: 0
-    },
-    series: [{
-      name: 'Allocations',
-      data: categories.map(function(cat) {
-        return genInfo[cat].length;
-      }),
-      point: {
-        events: {
-          click: function(event) {
-            showTable(this.objs);
-          }
-        }
-      }
-    }]
-  });
+function renderCharts(objects) {
+  var objectsCrossfilter = crossfilter(objects);
+
+  // objects by type
+  var objectsByTypeChart = dc.pieChart("#type-info");
+  var typeDimension = objectsCrossfilter.dimension(function(obj) { return obj.type; });
+
+  objectsByTypeChart
+       .width(600)
+       .height(400)
+       .radius(80)
+       .innerRadius(30)
+       .dimension(typeDimension)
+       .group(typeDimension.group());
+
+
+  // objects by generation
+  var objectsGenerationChart = dc.barChart("#generation-info");
+  var generationDimension = objectsCrossfilter.dimension(function(obj) { return obj.generation; });
+
+  var generationGroup = generationDimension.group();
+
+  objectsGenerationChart
+     .width(600)
+     .height(400)
+     .dimension(generationDimension)
+     .group(generationGroup)
+     .elasticY(true)
+     .centerBar(true)
+     .gap(1)
+     .x(d3.scale.linear().domain(d3.extent(generationGroup.all(), function(o) { return o.key; })))
+     .renderHorizontalGridLines(true);
+
+  dc.renderAll();
+
 }
 
 function updateFileProcessingProgressBar(percentageToCompletion) {
@@ -228,11 +173,7 @@ function readHeap(file) {
     if (eof) {
       $("#instructions").hide();
 
-      var typeInfo = objectsByType(objects);
-      plotTypes($('#type-info'), typeInfo);
-
-      var genInfo = objectsByGeneration(objects);
-      plotGeneration($('#generation-info'), genInfo);
+      renderCharts(objects);
 
       return;
     }
@@ -245,20 +186,3 @@ function readHeap(file) {
 document.querySelector('.readButton').addEventListener('click', function(e) {
   readHeap(document.getElementById('file').files[0]);
 }, false);
-
-$(function() {
-  // Make monochrome colors and set them as default for all pies
-  Highcharts.getOptions().plotOptions.pie.colors = (function() {
-    var colors = [],
-      base = Highcharts.getOptions().colors[0],
-      i;
-
-    for (i = 0; i < 10; i += 1) {
-      // Start out with a darkened base color (negative brighten), and end
-      // up with a much brighter color
-      colors.push(Highcharts.Color(base).brighten((i - 3) / 7).get());
-    }
-    return colors;
-  }());
-
-});
