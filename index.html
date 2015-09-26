@@ -17,6 +17,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="bower_components/client-line-navigator/line-navigator.min.js"></script>
+  <script src="bower_components/client-line-navigator/file-navigator.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <script id="object-list" type="text/x-handlebars-template">
     <table class="table">
@@ -256,34 +258,46 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
   }
 
   function readHeap(file) {
-    var reader = new FileReader();
+    var fileNavigator = new FileNavigator(file);
 
-    reader.onloadend = function(evt) {
-      if (evt.target.readyState == FileReader.DONE) {
-        $("#instructions").hide();
-        var lines = evt.target.result.split("\n");
-        objects = [];
-        objIndex    = {};
+    objects = [];
+    objIndex = {};
 
-        lines.forEach(function(line) {
-            if (line.length > 0) {
-              var obj = JSON.parse(line);
-              objIndex[obj.address] = obj;
-              objects.push(obj);
-            }
-        });
+    // Start reading all files
+    fileNavigator.readSomeLines(0, function linesReadHandler(err, index, lines, eof, progress) {
+        // Error happened
+        if (err) {
+          console.error("Error while reading files", err);
+          return;
+        }
 
-        var typeInfo = objectsByType(objects);
-        plotTypes($('#type-info'), typeInfo);
+        // Reading lines
+        for (var i = 0; i < lines.length; i++) {
+            var lineIndex = index + i;
+            var line = lines[i];
 
-        var genInfo = objectsByGeneration(objects);
-        plotGeneration($('#generation-info'), genInfo);
+            // Parse each line and add it to the index
+            var obj = JSON.parse(line);
+            objIndex[obj.address] = obj;
+            objects.push(obj);
+        }
 
-        console.log("done");
-      }
-    };
+        // End of file
+        if (eof) {
+          $("#instructions").hide();
 
-    reader.readAsText(file);
+          var typeInfo = objectsByType(objects);
+          plotTypes($('#type-info'), typeInfo);
+
+          var genInfo = objectsByGeneration(objects);
+          plotGeneration($('#generation-info'), genInfo);
+
+          return;
+        }
+
+        // Reading next chunk, adding number of lines read to first line in current chunk
+        fileNavigator.readSomeLines(index + lines.length, linesReadHandler);
+    });
   }
 
 document.querySelector('.readButton').addEventListener('click', function(e) {
