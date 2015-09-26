@@ -37,7 +37,9 @@
       <div class="row">
         <div class="col-sm-12 form-inline">
           Getting a heap dump of your Rails application just after boot:
-          <pre>$ echo "require 'objspace'; ObjectSpace.trace_object_allocations_start" &gt; x.rb $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; puts ObjectSpace.dump_all.path'</pre>
+          <pre>
+$ echo "require 'objspace'; ObjectSpace.trace_object_allocations_start" &gt; x.rb
+$ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; puts ObjectSpace.dump_all.path'</pre>
           This will print a file name that contains JSON representing your heap. Upload that file.
         </div>
       </div>
