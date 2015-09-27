@@ -13,7 +13,7 @@ var objIndex = {};
 var parentsIndex = {};
 
 function addParents(element) {
-  var address = element.getAttribute("data-address");
+  var address = +element.getAttribute("data-address");
   var parentsAddress = parentsIndex[address];
 
   if(parentsAddress !== undefined) {
@@ -257,19 +257,19 @@ function readHeap(file) {
         return;
       }
       
-      objIndex[obj.address] = obj;
+      objIndex[+obj.address] = obj;
       objects.push(obj);
 
       // add object to the parents index
       // key - child, value = parents
       obj.references = obj.references || [];
 
-      var parentAddress = obj.address;
+      var parentAddress = +obj.address;
       obj.references.forEach(function(childAddress) {
-        var indexValue = parentsIndex[childAddress] || [];
+        var indexValue = parentsIndex[+childAddress] || [];
         indexValue.push(parentAddress);
 
-        parentsIndex[childAddress] =  indexValue;
+        parentsIndex[+childAddress] =  indexValue;
       });
     }
 
