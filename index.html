@@ -18,6 +18,7 @@
     width: 600px;
     height: 400px;
   }
+
   .top-buffer { margin-top:20px; }
 
   /*
@@ -40,6 +41,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.4/dc.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 </head>
 
 <body>
@@ -154,12 +156,12 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
     </tbody>
     </table>
   </script>
-  
+
   <script id="parent-list" type="text/x-handlebars-template">
     <tr data-parentsof="{{address}}">
       <td>Parents of {{address}}</td>
       <td colspan="4">{{{list}}}</td>
-      <tr>
+    <tr>
   </script>
 
   <!--

@@ -6,29 +6,28 @@ var plistTemplate = Handlebars.compile(plist);
 
 var $uploadProgressBar = $("#upload-progress-bar");
 
-var objects;
-var objIndex;
+var objects = [];
+var objIndex = {};
+
+// Map where the key is child object address, and the value is list parent's addres
+var parentsIndex = {};
 
 function addParents(element) {
   var address = element.getAttribute("data-address");
-  var parents = objects.filter(function(obj) {
-    return obj.references && obj.references.indexOf(address) >= 0;
-  });
+  var parentsAddress = parentsIndex[address];
 
-  if (parents.length > 0) {
-    var data = {
-      objects: parents.sort(function(a, b) {
-        return b.memsize - a.memsize;
-      })
-    };
-    var innerTable = template(data);
-    var newTr = plistTemplate({
-      list: innerTable,
-      "address": address
-    });
-    $(element).after(newTr);
+  if(parentsAddress !== undefined) {
+    var parents = parentsAddress.map(function(address)  { return objIndex[address]; });
+
+    if (parents.length > 0) {
+      var data = { objects: parents.sort(function(a, b) { return b.memsize - a.memsize; }) };
+      var innerTable = template(data);
+      var newTr = plistTemplate({ list: innerTable, "address": address });
+      $(element).after(newTr);
+    }
   }
 }
+
 
 function toggleParents(element) {
   var address = element.getAttribute("data-address");
@@ -260,6 +259,18 @@ function readHeap(file) {
       
       objIndex[obj.address] = obj;
       objects.push(obj);
+
+      // add object to the parents index
+      // key - child, value = parents
+      obj.references = obj.references || [];
+
+      var parentAddress = obj.address;
+      obj.references.forEach(function(childAddress) {
+        var indexValue = parentsIndex[childAddress] || [];
+        indexValue.push(parentAddress);
+
+        parentsIndex[childAddress] =  indexValue;
+      });
     }
 
     // End of file
