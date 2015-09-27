@@ -1,0 +1,17 @@
+{
+  "name": "heap-analyzer",
+  "version": "0.0.0",
+  "homepage": "https://github.com/tenderlove/heap-analyzer",
+  "authors": [],
+  "license": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "client-line-navigator": "git@github.com:anpur/client-line-navigator.git"
+  }
+}
