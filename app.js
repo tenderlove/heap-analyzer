@@ -227,6 +227,7 @@ function readHeap(file) {
 
   var objects = [];
   objIndex = {};
+  parentsIndex = {};
 
   clearErrors();
 
