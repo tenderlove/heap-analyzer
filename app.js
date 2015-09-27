@@ -6,7 +6,6 @@ var plistTemplate = Handlebars.compile(plist);
 
 var $uploadProgressBar = $("#upload-progress-bar");
 
-var objects = [];
 var objIndex = {};
 
 // Map where the key is child object address, and the value is list parent's addres
@@ -226,7 +225,7 @@ function clearErrors() {
 function readHeap(file) {
   var fileNavigator = new FileNavigator(file);
 
-  objects = [];
+  var objects = [];
   objIndex = {};
 
   clearErrors();
