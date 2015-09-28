@@ -32,11 +32,11 @@
     <tbody>
         {{#objects}}
         <tr title="address: {{address}} location: {{file}}:{{line}}" data-address="{{address}}">
-            <td>{{type}}</td> 
-            <td>{{trunc value}}</td> 
-            <td>{{memsize}}</td> 
-            <td>{{generation}}</td> 
-            <td>{{allocInfo file line }}</td> 
+            <td>{{type}}</td>
+            <td>{{trunc value}}</td>
+            <td>{{memsize}}</td>
+            <td>{{generation}}</td>
+            <td>{{allocInfo file line }}</td>
         </tr>
         {{/objects}}
     </tbody>
@@ -264,8 +264,8 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
         },
         series: [{
             name: 'Allocations',
-            data: categories.map(function(cat) {
-                return genInfo[cat].length;
+            data: categories.map(function(cat, ind) {
+                return { name: cat, y: genInfo[cat].length, x: ind, objs: genInfo[cat] };
             }),
             point: {
               events: {
