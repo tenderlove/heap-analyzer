@@ -170,7 +170,8 @@ function renderCharts(objects) {
 
   // objects by generation
   var objectsGenerationChart = dc.barChart("#generation-info");
-  var generationDimension = objectsCrossfilter.dimension(function(obj) { return obj.generation; });
+
+  var generationDimension = objectsCrossfilter.dimension(function(obj) { return obj.generation || null; });
   var generationGroup = generationDimension.group();
 
   var generationsChartDimensions = getChartDimensions("#generation-info");
