@@ -71,6 +71,15 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
 					</div>
 				</div>
 			</div>
+
+      <div class="row" style="display: none;" id="error-message-row">
+        <div class="col-sm-12">
+          <div class="alert alert-danger fade in">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <strong>Error!</strong> <div id="error-message"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="charts-container top-buffer">
@@ -105,6 +114,9 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
     </div>
   </div>
 
+  <!--
+    Handlebars Templates
+  -->
   <script id="object-list" type="text/x-handlebars-template">
     <table class="table">
     <thead>

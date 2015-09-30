@@ -210,10 +210,18 @@ function renderCharts(objects) {
 function updateFileProcessingProgressBar(percentageToCompletion) {
   var percentageText = percentageToCompletion + "%";
   $uploadProgressBar.show().find(".progress-bar")
-    .attr("aria-valuenow", percentageToCompletion)
-    .css("width", percentageText)
-    .text(percentageText);
+                                  .attr("aria-valuenow", percentageToCompletion)
+                                  .css("width", percentageText)
+                                  .text(percentageText);
 
+}
+
+function showErrorMessage(errorText) {
+  $("#error-message-row").show().find("#error-message").text(errorText);
+}
+
+function clearErrors() {
+  $("#error-message-row").hide().find("#error-message").text("");
 }
 
 function readHeap(file) {
@@ -222,13 +230,15 @@ function readHeap(file) {
   objects = [];
   objIndex = {};
 
+  clearErrors();
+
   // Start reading all files
   fileNavigator.readSomeLines(0, function linesReadHandler(err, index, lines, eof, progress) {
     updateFileProcessingProgressBar(progress);
 
     // Error happened
     if (err) {
-      console.error("Error while reading files", err);
+      showErrorMessage("Error while reading files:" + err);
       return;
     }
 
@@ -238,7 +248,16 @@ function readHeap(file) {
       var line = lines[i];
 
       // Parse each line and add it to the index
-      var obj = JSON.parse(line);
+      try {
+        var obj = JSON.parse(line);
+      } catch(e) {
+        // If we have error parsing, show the error and stop processing.
+        var lineIndex = index + i + 1;
+        var errorText = "Failed parsing json object on line " + lineIndex + ", " +  e;
+        showErrorMessage(errorText);
+        return;
+      }
+      
       objIndex[obj.address] = obj;
       objects.push(obj);
     }
