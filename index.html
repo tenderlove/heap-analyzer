@@ -6,7 +6,7 @@
   <title>Heap Information</title>
   <style>
   .charts-row {
-     height: 400px;
+    height: 400px;
   }
 
   .charts-container {
@@ -19,6 +19,15 @@
     height: 400px;
   }
   .top-buffer { margin-top:20px; }
+
+  /*
+    Disable transitions from bootstrap's progressbar, for resets.
+  */
+  .progress-bar {
+    transition: none !important;
+    -o-transition: none !important;
+    -webkit-transition: none !important;
+  }
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
