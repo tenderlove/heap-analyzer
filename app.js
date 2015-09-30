@@ -134,7 +134,7 @@ function getChartDimensions(chartSelector) {
 function renderCharts(objects) {
   // Show charts row, it's important to be here becuase dc.pieChart/dc.barChart/dc.*Chart
   // needs the elements to be shown :(
-  $(".charts-row").show();
+  $(".charts-container").show();
 
   var objectsCrossfilter = crossfilter(objects);
 
@@ -195,7 +195,10 @@ function renderCharts(objects) {
   var addressDimension = objectsCrossfilter.dimension(function(d) { return d.address; });
   bindObjectsTable(addressDimension);
 
-
+  // data count & filter control
+  var dataCount = dc.dataCount('.dc-data-count');
+  var dcount = dataCount.dimension(objectsCrossfilter)
+       .group(objectsCrossfilter.groupAll());
 
   dc.renderAll();
 }

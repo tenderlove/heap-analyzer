@@ -7,6 +7,9 @@
   <style>
     .charts-row {
       height: 400px;
+    }
+
+    .charts-container {
       display: none;
     }
 
@@ -55,24 +58,37 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
 						</div>
 					</div>
 				</div>
-			</div>      
+			</div>
     </div>
 
-    <div class="row top-buffer charts-row">
-      <div class="col-sm-4">
-        <strong>Type Count</strong>
-        <br/>
-        <div id="type-info" class="dc-chart"></div>
+    <div class="charts-container top-buffer">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="dc-data-count dc-chart">
+            <strong class="filter-count"></strong> selected out of <strong class="total-count"></strong> records |
+            <a href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+          </div>
+        </div>
       </div>
 
-      <div class="col-sm-8">
-        <strong>Allocations per Generation</strong>
-        <br/>
-        <div id="generation-info" class="dc-chart"></div>
+      <br/>
+
+      <div class="row charts-row">
+        <div class="col-sm-4">
+          <strong>Type Count</strong>
+          <br/>
+          <div id="type-info" class="dc-chart"></div>
+        </div>
+
+        <div class="col-sm-8">
+          <strong>Allocations per Generation</strong>
+          <br/>
+          <div id="generation-info" class="dc-chart"></div>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div id="obj-list" class="col-sm-12">
+      <div class="row">
+        <div id="obj-list" class="col-sm-12">
+        </div>
       </div>
     </div>
   </div>
