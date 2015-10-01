@@ -11,6 +11,11 @@ var objIndex = {};
 // Map where the key is child object address, and the value is list parent's addres
 var parentsIndex = {};
 
+function toAddress(number) {
+  return '0x' + number.toString(16);
+}
+
+
 function addParents(element) {
   var address = +element.getAttribute("data-address");
   var parentsAddress = parentsIndex[address];
@@ -21,7 +26,7 @@ function addParents(element) {
     if (parents.length > 0) {
       var data = { objects: parents.sort(function(a, b) { return b.memsize - a.memsize; }) };
       var innerTable = template(data);
-      var newTr = plistTemplate({ list: innerTable, "address": address });
+      var newTr = plistTemplate({ list: innerTable, "address": toAddress(address) });
       $(element).after(newTr);
     }
   }
