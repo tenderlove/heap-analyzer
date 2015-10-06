@@ -64,7 +64,7 @@ Handlebars.registerHelper('allocInfo', function(file, line) {
 });
 
 Handlebars.registerHelper('fetchClassName', function(classAddress) {
-  return objIndex[classAddress].name;
+  return objIndex[+classAddress].name;
 });
 
 function objectsByType(objs) {
