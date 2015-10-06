@@ -6,7 +6,7 @@
   <title>Heap Information</title>
   <style>
   .charts-row {
-     height: 400px;
+    height: 400px;
   }
 
   .charts-container {
@@ -19,6 +19,15 @@
     height: 400px;
   }
   .top-buffer { margin-top:20px; }
+
+  /*
+    Disable transitions from bootstrap's progressbar, for resets.
+  */
+  .progress-bar {
+    transition: none !important;
+    -o-transition: none !important;
+    -webkit-transition: none !important;
+  }
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -71,6 +80,15 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
 					</div>
 				</div>
 			</div>
+
+      <div class="row" style="display: none;" id="error-message-row">
+        <div class="col-sm-12">
+          <div class="alert alert-danger fade in">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <strong>Error!</strong> <div id="error-message"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="charts-container top-buffer">
@@ -105,6 +123,9 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
     </div>
   </div>
 
+  <!--
+    Handlebars Templates
+  -->
   <script id="object-list" type="text/x-handlebars-template">
     <table class="table">
     <thead>
