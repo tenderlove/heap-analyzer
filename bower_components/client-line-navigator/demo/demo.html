@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<title>Line navigator demo</title>
+		<style>
+			input, button {
+				margin: 5px;
+			}
+			#output {
+				border: 1px solid black;	
+				padding: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<input id="file-select" type="file" name="files[]"  />
+		<hr>
+		<button id="read">Read</button>
+		<hr>
+		
+		<button id="search-beginning">Find first</button>
+		<input type="text" id="find-first-pattern" placeholder="Regexp pattern" />
+		<button id="search-next">Find next</button>
+		<hr>
+		
+		<button id="searchAll">Find all</button>
+		<input type="text" id="find-all-pattern" placeholder="Regexp pattern" />
+		(results are limited to 100 lines max)
+		<hr>
+			
+		<div id="meta"></div><br>
+		<div id="output">RESULTS</div>
+		
+		<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+		<script src="line-navigator.js"></script>
+		<script src="file-navigator.js"></script>
+		<script src="demo.js"></script>
+	</body>
+</html>

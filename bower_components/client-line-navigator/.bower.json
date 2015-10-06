@@ -1,0 +1,13 @@
+{
+  "name": "client-line-navigator",
+  "homepage": "https://github.com/anpur/client-line-navigator",
+  "_release": "c139e2f890",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c139e2f8906026445ecc956c6839dc4f60118cf7"
+  },
+  "_source": "git@github.com:anpur/client-line-navigator.git",
+  "_target": "*",
+  "_originalSource": "git@github.com:anpur/client-line-navigator.git"
+}
