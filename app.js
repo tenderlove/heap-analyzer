@@ -6,29 +6,32 @@ var plistTemplate = Handlebars.compile(plist);
 
 var $uploadProgressBar = $("#upload-progress-bar");
 
-var objects;
-var objIndex;
+var objIndex = {};
+
+// Map where the key is child object address, and the value is list parent's addres
+var parentsIndex = {};
+
+function toAddress(number) {
+  return '0x' + number.toString(16);
+}
+
 
 function addParents(element) {
-  var address = element.getAttribute("data-address");
-  var parents = objects.filter(function(obj) {
-    return obj.references && obj.references.indexOf(address) >= 0;
-  });
+  var address = +element.getAttribute("data-address");
+  var parentsAddress = parentsIndex[address];
 
-  if (parents.length > 0) {
-    var data = {
-      objects: parents.sort(function(a, b) {
-        return b.memsize - a.memsize;
-      })
-    };
-    var innerTable = template(data);
-    var newTr = plistTemplate({
-      list: innerTable,
-      "address": address
-    });
-    $(element).after(newTr);
+  if(parentsAddress !== undefined) {
+    var parents = parentsAddress.map(function(address)  { return objIndex[address]; });
+
+    if (parents.length > 0) {
+      var data = { objects: parents.sort(function(a, b) { return b.memsize - a.memsize; }) };
+      var innerTable = template(data);
+      var newTr = plistTemplate({ list: innerTable, "address": toAddress(address) });
+      $(element).after(newTr);
+    }
   }
 }
+
 
 function toggleParents(element) {
   var address = element.getAttribute("data-address");
@@ -61,7 +64,7 @@ Handlebars.registerHelper('allocInfo', function(file, line) {
 });
 
 Handlebars.registerHelper('fetchClassName', function(classAddress) {
-  return objIndex[classAddress].name;
+  return objIndex[+classAddress].name;
 });
 
 function objectsByType(objs) {
@@ -227,8 +230,9 @@ function clearErrors() {
 function readHeap(file) {
   var fileNavigator = new FileNavigator(file);
 
-  objects = [];
+  var objects = [];
   objIndex = {};
+  parentsIndex = {};
 
   clearErrors();
 
@@ -258,8 +262,20 @@ function readHeap(file) {
         return;
       }
       
-      objIndex[obj.address] = obj;
+      objIndex[+obj.address] = obj;
       objects.push(obj);
+
+      // add object to the parents index
+      // key - child, value = parents
+      obj.references = obj.references || [];
+
+      var parentAddress = +obj.address;
+      obj.references.forEach(function(childAddress) {
+        var indexValue = parentsIndex[+childAddress] || [];
+        indexValue.push(parentAddress);
+
+        parentsIndex[+childAddress] =  indexValue;
+      });
     }
 
     // End of file
