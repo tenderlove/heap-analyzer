@@ -9,14 +9,14 @@ var $uploadProgressBar = $("#upload-progress-bar");
 var objIndex = {};
 
 
-function toAddress(number) {
-  return '0x' + number.toString(16);
-}
-
-
 function addParents(element) {
-  var address = +element.getAttribute("data-address");
-  var parentsAddress = objIndex[address].parents;
+  var address = element.getAttribute("data-address");
+  var childrenObject = objIndex[address];
+  if(childrenObject === undefined) return;
+
+  var parentsAddress = childrenObject.parents;
+
+
 
   if(parentsAddress !== undefined) {
     var parents = parentsAddress.map(function(address)  { return objIndex[address]; });
@@ -24,7 +24,7 @@ function addParents(element) {
     if (parents.length > 0) {
       var data = { objects: parents.sort(function(a, b) { return b.memsize - a.memsize; }) };
       var innerTable = template(data);
-      var newTr = plistTemplate({ list: innerTable, "address": toAddress(address) });
+      var newTr = plistTemplate({ list: innerTable, "address": address });
       $(element).after(newTr);
     }
   }
@@ -205,8 +205,8 @@ function setParents(parentsIndex) {
     if (parentsIndex.hasOwnProperty(childAddress)) {
       var obj = objIndex[childAddress];
 
+      // If object has no parents..
       if(obj === undefined) {
-        console.warn(childAddress + " is not foud in the object index");
         continue;
       }
 
