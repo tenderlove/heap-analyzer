@@ -8,8 +8,6 @@ var $uploadProgressBar = $("#upload-progress-bar");
 
 var objIndex = {};
 
-// Map where the key is child object address, and the value is list parent's addres
-var parentsIndex = {};
 
 function toAddress(number) {
   return '0x' + number.toString(16);
@@ -18,7 +16,7 @@ function toAddress(number) {
 
 function addParents(element) {
   var address = +element.getAttribute("data-address");
-  var parentsAddress = parentsIndex[address];
+  var parentsAddress = objIndex[address].parents;
 
   if(parentsAddress !== undefined) {
     var parents = parentsAddress.map(function(address)  { return objIndex[address]; });
@@ -64,7 +62,7 @@ Handlebars.registerHelper('allocInfo', function(file, line) {
 });
 
 Handlebars.registerHelper('fetchClassName', function(classAddress) {
-  return objIndex[+classAddress].name;
+  return objIndex[classAddress].name;
 });
 
 function objectsByType(objs) {
@@ -227,6 +225,25 @@ function clearErrors() {
   $("#error-message-row").hide().find("#error-message").text("");
 }
 
+function setParents(parentsIndex) {
+
+  for (childAddress in parentsIndex) {
+    if (parentsIndex.hasOwnProperty(childAddress)) {
+      var obj = objIndex[childAddress];
+
+      if(obj === undefined) {
+        console.warn(childAddress + " is not foud in the object index");
+        continue;
+      }
+
+      objIndex[childAddress].parents = parentsIndex[childAddress];
+      objIndex[childAddress].references = null;
+
+    }
+  }
+
+}
+
 function readHeap(file) {
   var fileNavigator = new FileNavigator(file);
 
@@ -261,26 +278,30 @@ function readHeap(file) {
         showErrorMessage(errorText);
         return;
       }
-      
-      objIndex[+obj.address] = obj;
+
+      objIndex[obj.address] = obj;
       objects.push(obj);
 
       // add object to the parents index
       // key - child, value = parents
       obj.references = obj.references || [];
 
-      var parentAddress = +obj.address;
+      var parentAddress = obj.address;
       obj.references.forEach(function(childAddress) {
         var indexValue = parentsIndex[+childAddress] || [];
         indexValue.push(parentAddress);
 
-        parentsIndex[+childAddress] =  indexValue;
+        parentsIndex[childAddress] =  indexValue;
       });
     }
 
     // End of file
     if (eof) {
       $("#instructions").hide();
+
+      setParents(parentsIndex);
+
+      parentsIndex = [];
 
       renderCharts(objects);
 
