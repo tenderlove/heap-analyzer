@@ -110,32 +110,26 @@ function getChartDimensions(chartSelector) {
   };
 }
 
-function renderCharts(objects) {
-  // Show charts row, it's important to be here becuase dc.pieChart/dc.barChart/dc.*Chart
-  // needs the elements to be shown :(
-  $(".charts-container").show();
+function renderPieChart(pieSelector, pieDimension, pieGroup) {
+  if(pieGroup === undefined) {
+    pieGroup = pieDimension.group();
+  }
 
-  var objectsCrossfilter = crossfilter(objects);
-
-
-  // objects by type
-  var objectsByTypeChart = dc.pieChart("#type-info");
-  var typeDimension = objectsCrossfilter.dimension(function(obj) { return obj.type; });
-
-  var typeChartDimensions = getChartDimensions("#type-info");
+  var pieChart = dc.pieChart(pieSelector);
+  var typeChartDimensions = getChartDimensions(pieSelector);
 
   // calculate the radius and the inner radius
   var diameter = Math.min(typeChartDimensions.height, typeChartDimensions.width),
       radius = diameter / 2,
       innerRadius = 0.3 * radius;
 
-  objectsByTypeChart
+  pieChart 
        .width(typeChartDimensions.width)
        .height(typeChartDimensions.height)
        .radius(radius)
        .innerRadius(innerRadius)
-       .dimension(typeDimension)
-       .group(typeDimension.group())
+       .dimension(pieDimension)
+       .group(pieGroup)
        .title(function(d) {
          return d.data.key + " - " + d.data.value;
        })
@@ -145,6 +139,35 @@ function renderCharts(objects) {
          return d.data.key + " - " + pct + '%';
        })
        .transitionDuration(500);
+}
+
+function renderCharts(objects) {
+  // Show charts row, it's important to be here becuase dc.pieChart/dc.barChart/dc.*Chart
+  // needs the elements to be shown :(
+  $(".charts-container").show();
+
+  var objectsCrossfilter = crossfilter(objects);
+
+
+  // objects by type
+  var typeDimension = objectsCrossfilter.dimension(function(obj) { return obj.type; });
+  renderPieChart("#type-info", typeDimension);
+
+
+  // objects by class 
+  var classSizeDimension = objectsCrossfilter.dimension(function(obj) {
+    if(obj.hasOwnProperty('class') && objIndex.hasOwnProperty(obj.class)) {
+      return objIndex[obj.class].name;
+    }
+
+    return null;
+  });
+
+  var classSizeGroup = classSizeDimension.group().reduceSum(function(obj) {
+    return obj.memsize;    
+  });
+
+  renderPieChart("#classes-by-size-info", classSizeDimension, classSizeGroup);
 
 
   // objects by generation

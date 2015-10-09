@@ -96,13 +96,19 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
       <br/>
 
       <div class="row charts-row">
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <strong>Type Count</strong>
           <br/>
           <div id="type-info" class="dc-chart"></div>
         </div>
 
-        <div class="col-sm-8">
+        <div class="col-sm-3">
+          <strong>Classes by size</strong>
+          <br/>
+          <div id="classes-by-size-info" class="dc-chart"></div>
+        </div>
+
+        <div class="col-sm-6">
           <strong>Allocations per Generation</strong>
           <br/>
           <div id="generation-info" class="dc-chart"></div>
