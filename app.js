@@ -65,32 +65,6 @@ Handlebars.registerHelper('fetchClassName', function(classAddress) {
   return objIndex[classAddress].name;
 });
 
-function objectsByType(objs) {
-  var data = {};
-  objs.forEach(function(obj) {
-    if (obj.type) {
-      if (!data[obj.type]) {
-        data[obj.type] = [];
-      }
-      data[obj.type].push(obj);
-    }
-  });
-  return data;
-}
-
-function objectsByGeneration(objs) {
-  var data = {};
-  objs.forEach(function(obj) {
-    if (obj.generation) {
-      if (!data[obj.generation]) {
-        data[obj.generation] = [];
-      }
-      data[obj.generation].push(obj);
-    }
-  });
-  return data;
-}
-
 
 function bindObjectsTable(addressDimension) {
   // Get objects count
