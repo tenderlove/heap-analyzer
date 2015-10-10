@@ -21,6 +21,14 @@
 
   .top-buffer { margin-top:20px; }
 
+  #instructions .terminal {
+    background: #424242;
+    line-height: 1.4em;
+    color: white;
+    font-family: monospace;
+    margin: 14px 0;
+  }
+
   /*
     Disable transitions from bootstrap's progressbar, for resets.
   */
@@ -53,7 +61,7 @@
       <div class="row">
         <div class="col-sm-12 form-inline">
           Getting a heap dump of your Rails application just after boot:
-          <pre>
+          <pre class="terminal">
 $ echo "require 'objspace'; ObjectSpace.trace_object_allocations_start" &gt; x.rb
 $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; puts ObjectSpace.dump_all.path'</pre>
           This will print a file name that contains JSON representing your heap. Upload that file.
