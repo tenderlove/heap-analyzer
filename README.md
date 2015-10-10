@@ -8,8 +8,14 @@ You can see the current version [here](http://tenderlove.github.io/heap-analyzer
 
 It processes MRI heap dumps in your browser.
 
-After you upload your heap dump, it will it will show you a break down of
-number of objects per type and number of allocations per generation:
+After you upload your heap dump, it will it will show you a break down of:
+
+ - Number of allocations per generation
+ - Numbers of per type
+ - Classes by memory size
+ - Methods by allocation size
+ - Gems by allocation size
+
 
 ![uploaded](https://github.com/tenderlove/heap-analyzer/raw/master/images/uploaded.png "After Upload")
 
@@ -38,9 +44,6 @@ Also, please send pull requests.
 
 
 ## TODO
-
-The points in the "objects allocated per generation" graph are not clickable.  I
-would like to make them clickable in order to help find object leaks per generation.
 
 Building the giant table is pretty slow, I would like to speed that up.
 
