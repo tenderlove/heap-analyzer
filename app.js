@@ -188,7 +188,8 @@ function renderCharts(objects) {
     .elasticY(true)
     .centerBar(true)
     .gap(1)
-    .x(d3.scale.linear().domain(d3.extent(generationGroup.all(), function(o) { return o.key; })));
+    .x(d3.scale.linear().domain(d3.extent(generationGroup.all(), function(o) { return o.key; })))
+    .mouseZoomable(true);
 
 
   // objects table
