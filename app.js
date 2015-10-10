@@ -156,11 +156,11 @@ function renderCharts(objects) {
 
   // objects by class 
   var classSizeDimension = objectsCrossfilter.dimension(function(obj) {
-    if(obj.hasOwnProperty('class') && objIndex.hasOwnProperty(obj.class)) {
-      return objIndex[obj.class].name;
-    }
+    var classAddress = obj.class;
+    if(_.isUndefined(classAddress)) return null;
 
-    return null;
+    var classObj = objIndex[classAddress];
+    return classObj ? classObj.name : null;
   });
 
   var classSizeGroup = classSizeDimension.group().reduceSum(function(obj) {
