@@ -141,6 +141,35 @@ function renderPieChart(pieSelector, pieDimension, pieGroup) {
        .transitionDuration(500);
 }
 
+
+/*
+  Extracting gem name logic thanks to Sam Saffron -
+  https://github.com/SamSaffron/memory_profiler/blob/master/lib/memory_profiler/helpers.rb#L10-L20
+*/
+var gemFileExtractoinRegex = new RegExp(/(\/gems\/.*)*\/gems\/([^\/]+)/);
+var rubygemsPathRegex = new RegExp(/\/rubygems[\.\/]/);
+
+function extractGemName(file) {
+  if(!_.isString(file)) return null; 
+
+  var matches = gemFileExtractoinRegex.exec(file);
+  if(matches !== null) {
+    return _.last(matches);
+  }
+
+  if(rubygemsPathRegex.test(file)) {
+    return "rubygems";
+  }
+
+  return "Unknown";
+}
+
+function groupByAllocationSize(dimension) {
+  return dimension.group().reduceSum(function(obj) {
+    return obj.memsize || 0;    
+  });
+}
+
 function renderCharts(objects) {
   // Show charts row, it's important to be here becuase dc.pieChart/dc.barChart/dc.*Chart
   // needs the elements to be shown :(
@@ -153,6 +182,14 @@ function renderCharts(objects) {
   var typeDimension = objectsCrossfilter.dimension(function(obj) { return obj.type; });
   renderPieChart("#type-info", typeDimension);
 
+  // objects my gem
+  var gemDimension = objectsCrossfilter.dimension(function(obj) { return extractGemName(obj.file); });
+  renderPieChart("#gem-info", gemDimension, groupByAllocationSize(gemDimension));
+
+  // objects my method 
+  var methodDimension = objectsCrossfilter.dimension(function(obj) { return obj.method || null; });
+  renderPieChart("#method-info", methodDimension);
+
 
   // objects by class 
   var classSizeDimension = objectsCrossfilter.dimension(function(obj) {
@@ -163,11 +200,7 @@ function renderCharts(objects) {
     return classObj ? classObj.name : null;
   });
 
-  var classSizeGroup = classSizeDimension.group().reduceSum(function(obj) {
-    return obj.memsize || 0;    
-  });
-
-  renderPieChart("#classes-by-size-info", classSizeDimension, classSizeGroup);
+  renderPieChart("#classes-by-size-info", classSizeDimension, groupByAllocationSize(classSizeDimension));
 
 
   // objects by generation

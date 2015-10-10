@@ -135,6 +135,17 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
           <div class="pie-title">Classes by size</div>
           <div id="classes-by-size-info" class="dc-chart"></div>
         </div>
+
+        <div class="col-sm-3">
+          <div class="pie-title">Allocations by Method</div>
+          <div id="method-info" class="dc-chart"></div>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="pie-title">Gems by Allocation Size</div>
+          <div id="gem-info" class="dc-chart"></div>
+        </div>
+
       </div>
       <div class="row">
         <div id="obj-list" class="col-sm-12">
