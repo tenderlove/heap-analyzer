@@ -164,7 +164,7 @@ function renderCharts(objects) {
   });
 
   var classSizeGroup = classSizeDimension.group().reduceSum(function(obj) {
-    return obj.memsize;    
+    return obj.memsize || 0;    
   });
 
   renderPieChart("#classes-by-size-info", classSizeDimension, classSizeGroup);
