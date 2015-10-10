@@ -106,7 +106,7 @@ function getChartDimensions(chartSelector) {
     width: $chart.parent().width(),
 
     // Get the height from charts-row elemnt
-    height: $chart.parents('.charts-row').height()
+    height: $chart.parents('.row').height()
   };
 }
 
@@ -199,7 +199,7 @@ function renderCharts(objects) {
   bindObjectsTable(addressDimension);
 
   // data count & filter control
-  var dataCount = dc.dataCount('.dc-data-count');
+  var dataCount = dc.dataCount('.data-count');
   var dcount = dataCount.dimension(objectsCrossfilter)
        .group(objectsCrossfilter.groupAll());
 

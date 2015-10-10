@@ -5,8 +5,21 @@
   <meta charset="utf-8" />
   <title>Heap Information</title>
   <style>
-  .charts-row {
-    height: 400px;
+  .pie-charts-row {
+    height: 200px;
+  }
+
+  .pie-charts-row > div {
+    text-align: center;
+  }
+  .pie-title {
+    margin-top: 14px;
+    margin-bottom: 14px;
+    font-weight: bold;
+  }
+
+  .bar-charts-row {
+    height: 150px;
   }
 
   .charts-container {
@@ -93,33 +106,34 @@ $ RAILS_ENV=production ruby -I. -rx -e'require "config/environment"; GC.start; p
 
     <div class="charts-container top-buffer">
       <div class="row">
-        <div class="col-sm-12">
-          <div class="dc-data-count dc-chart">
+        <div class="col-sm-6">
+          <strong>Allocations per Generation</strong>
+        </div>
+        <div class="col-sm-6">
+          <div class="data-count dc-chart pull-right">
             <strong class="filter-count"></strong> selected out of <strong class="total-count"></strong> records |
             <a href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
           </div>
         </div>
+
+        <div class="clearfix"></div>
       </div>
 
-      <br/>
+      <div class="row bar-charts-row">
+        <div class="col-sm-12">
+          <div id="generation-info" class="dc-chart"></div>
+        </div>
+      </div>
 
-      <div class="row charts-row">
+      <div class="row pie-charts-row">
         <div class="col-sm-3">
-          <strong>Type Count</strong>
-          <br/>
+          <div class="pie-title">Type Count</div>
           <div id="type-info" class="dc-chart"></div>
         </div>
 
         <div class="col-sm-3">
-          <strong>Classes by size</strong>
-          <br/>
+          <div class="pie-title">Classes by size</div>
           <div id="classes-by-size-info" class="dc-chart"></div>
-        </div>
-
-        <div class="col-sm-6">
-          <strong>Allocations per Generation</strong>
-          <br/>
-          <div id="generation-info" class="dc-chart"></div>
         </div>
       </div>
       <div class="row">
