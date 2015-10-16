@@ -4,6 +4,26 @@ This is a Not Very Good heap analyzer for MRI.  It is not very good.
 
 You can see the current version [here](http://tenderlove.github.io/heap-analyzer/).
 
+## Install Locally
+
+You will need NPM installed. Use this to install bower
+
+```
+$ npm install -g bower
+```
+
+Once you have bower installed you can install all the dependnecies by running
+
+```
+$ bower install
+```
+
+Once you've done this you can now open the heap analyzer by loading the `index.html` in a browser
+
+```
+$ open index.html
+```
+
 ## The Good Things
 
 It processes MRI heap dumps in your browser.
