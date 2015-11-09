@@ -275,6 +275,21 @@ function setParents(parentsIndex) {
 
 }
 
+function parseObject(obj) {
+  return {
+    address: obj.address,
+    type: obj.type,
+    file: obj.file,
+    line: obj.line,
+    method: obj.method,
+    class: obj.class,
+    value: obj.value,
+    name: obj.name,
+    generation: obj.generation,
+    references: obj.references || []
+  };
+}
+
 function readHeap(file) {
   var fileNavigator = new FileNavigator(file);
 
@@ -310,13 +325,13 @@ function readHeap(file) {
         return;
       }
 
+      obj = parseObject(obj);
+
       objIndex[obj.address] = obj;
       objects.push(obj);
 
       // add object to the parents index
       // key - child, value = parents
-      obj.references = obj.references || [];
-
       var parentAddress = obj.address;
       obj.references.forEach(function(childAddress) {
         var indexValue = parentsIndex[+childAddress] || [];
