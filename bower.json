@@ -12,6 +12,6 @@
     "tests"
   ],
   "dependencies": {
-    "client-line-navigator": "git@github.com:anpur/client-line-navigator.git"
+    "client-line-navigator": "https://github.com/anpur/line-navigator.git#c139e2f8906026445ecc956c6839dc4f60118cf7"
   }
 }
